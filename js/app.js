@@ -107,7 +107,11 @@ const tasks = [
       '--input-focus-box-shadow': '0 0 0 0.2rem rgba(141, 143, 146, 0.25)',
     },
   };
-  let lastSelectedTheme = 'default';
+  let lastSelectedTheme = localStorage.getItem('app_theme') || 'default';
+  // Берём последнее значение установленной темы из localStorage,
+  // если его нет, тогда используем Default Theme
+  // У нас есть значение последней установленной темы в localStorage.
+  // После перезагрузки это значение будет применяться.
 
   // Elements UI
   const listContainer = document.querySelector('.tasks-list-section .list-group');
@@ -126,6 +130,8 @@ const tasks = [
 
 
   // Events
+  setTheme(lastSelectedTheme);
+  // Чтобы сначала применялась тема из LocalStorage
   renderAllTasks(objOfTasks);
   form.addEventListener('submit', onFormSubmitHandler);
   // addEventListener универсальный способ для обработки.
@@ -306,6 +312,8 @@ const tasks = [
     }
     setTheme(selectedTheme)
     lastSelectedTheme = selectedTheme;
+    localStorage.setItem('app_theme', selectedTheme);
+  //  Добавляем ключ-значение в локальное хранилище
   }
 
   function setTheme(name) {
