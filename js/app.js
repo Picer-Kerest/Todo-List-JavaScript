@@ -41,6 +41,74 @@ const tasks = [
     return acc;
   }, {});
 
+  const themes = {
+    default: {
+      '--base-text-color': '#212529',
+      '--header-bg': '#007bff',
+      '--header-text-color': '#fff',
+      '--default-btn-bg': '#007bff',
+      '--default-btn-text-color': '#fff',
+      '--default-btn-hover-bg': '#0069d9',
+      '--default-btn-border-color': '#0069d9',
+      '--danger-btn-bg': '#dc3545',
+      '--danger-btn-text-color': '#fff',
+      '--danger-btn-hover-bg': '#bd2130',
+      '--danger-btn-border-color': '#dc3545',
+      '--input-border-color': '#ced4da',
+      '--input-bg-color': '#fff',
+      '--input-text-color': '#495057',
+      '--input-focus-bg-color': '#fff',
+      '--input-focus-text-color': '#495057',
+      '--input-focus-border-color': '#80bdff',
+      '--input-focus-box-shadow': '0 0 0 0.2rem rgba(0, 123, 255, 0.25)',
+    },
+    dark: {
+      '--base-text-color': '#212529',
+      '--header-bg': '#343a40',
+      '--header-text-color': '#fff',
+      '--default-btn-bg': '#58616b',
+      '--default-btn-text-color': '#fff',
+      '--default-btn-hover-bg': '#292d31',
+      '--default-btn-border-color': '#343a40',
+      '--default-btn-focus-box-shadow':
+          '0 0 0 0.2rem rgba(141, 143, 146, 0.25)',
+      '--danger-btn-bg': '#b52d3a',
+      '--danger-btn-text-color': '#fff',
+      '--danger-btn-hover-bg': '#88222c',
+      '--danger-btn-border-color': '#88222c',
+      '--input-border-color': '#ced4da',
+      '--input-bg-color': '#fff',
+      '--input-text-color': '#495057',
+      '--input-focus-bg-color': '#fff',
+      '--input-focus-text-color': '#495057',
+      '--input-focus-border-color': '#78818a',
+      '--input-focus-box-shadow': '0 0 0 0.2rem rgba(141, 143, 146, 0.25)',
+    },
+    light: {
+      '--base-text-color': '#212529',
+      '--header-bg': '#fff',
+      '--header-text-color': '#212529',
+      '--default-btn-bg': '#fff',
+      '--default-btn-text-color': '#212529',
+      '--default-btn-hover-bg': '#e8e7e7',
+      '--default-btn-border-color': '#343a40',
+      '--default-btn-focus-box-shadow':
+          '0 0 0 0.2rem rgba(141, 143, 146, 0.25)',
+      '--danger-btn-bg': '#f1b5bb',
+      '--danger-btn-text-color': '#212529',
+      '--danger-btn-hover-bg': '#ef808a',
+      '--danger-btn-border-color': '#e2818a',
+      '--input-border-color': '#ced4da',
+      '--input-bg-color': '#fff',
+      '--input-text-color': '#495057',
+      '--input-focus-bg-color': '#fff',
+      '--input-focus-text-color': '#495057',
+      '--input-focus-border-color': '#78818a',
+      '--input-focus-box-shadow': '0 0 0 0.2rem rgba(141, 143, 146, 0.25)',
+    },
+  };
+  let lastSelectedTheme = 'default';
+
   // Elements UI
   const listContainer = document.querySelector('.tasks-list-section .list-group');
   // Выбираем точечно место, куда вставим таски
@@ -54,6 +122,8 @@ const tasks = [
   const inputBody = form.elements['body'];
   // По имени или по id можно получить доступ к элементу
 
+  const themeSelect = document.getElementById('themeSelect');
+
 
   // Events
   renderAllTasks(objOfTasks);
@@ -62,6 +132,7 @@ const tasks = [
   // (Тип события, обработчик, объект с настройками)
   // submit – пользователь отправил форму <form>
   listContainer.addEventListener('click', onDeleteHandler);
+  themeSelect.addEventListener('change', onThemeSelectHandler);
 
   function renderAllTasks(tasksList) {
   //  Функция, которая выводит таски на страницу.
@@ -80,7 +151,7 @@ const tasks = [
 
     Object.values(tasksList).forEach(task => {
       // Берём значения, потому что tasksList = objOfTasks
-      // objOfTasks, это словарь где ключ это id, значение эта таска
+      // objOfTasks, это словарь, где ключ это id, значение эта таска
       // В итоге на каждой итерации здесь будет элемент li с содержимым для каждой задачи
       const li = listItemTemplate(task);
       fragment.appendChild(li);
@@ -217,6 +288,34 @@ const tasks = [
     //  Флажок для удаления из разметки, то есть чтобы не было видно на сайте
       deleteTaskFromHtml(confirmed, parent);
     }
+  }
+
+
+//  Для изменения темы две функции.
+//  Одна - обработчик события.
+//  Вторая - функция, которая устанавливает тему
+//  Нужно отследить событие change на select'e, забрать значение и установить нужную тему по id select'a
+
+  function onThemeSelectHandler(e) {
+  //  Изменения select'a
+    const selectedTheme = themeSelect.value;
+    const isConfirmed = confirm(`Вы действительно хотите изменить тему на ${selectedTheme}?`);
+    if (!isConfirmed) {
+      selectedTheme.value = lastSelectedTheme;
+      return;
+    }
+    setTheme(selectedTheme)
+    lastSelectedTheme = selectedTheme;
+  }
+
+  function setTheme(name) {
+  //  Установка темы
+    const selectedThemObj = themes[name];
+  //  Object.entries(obj) – возвращает массив пар [ключ, значение].
+    Object.entries(selectedThemObj).forEach(([key, value]) => {
+    // Теперь нужно установить значения
+    document.documentElement.style.setProperty(key, value);
+    })
   }
 })(tasks);
 
